@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attack | OE Training</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { neon: '#39FF14', dark: '#111111', card: '#1F1F1F', darklighter: '#2A2A2A' },
+                    fontFamily: { display: ['Montserrat', 'sans-serif'], mono: ['Roboto Mono', 'monospace'] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-dark text-gray-200 h-screen flex flex-col">
+
+    <nav class="bg-black border-b border-neon/30 p-4 flex justify-between items-center z-50 shrink-0">
+        <a href="mainhome page.html" class="flex items-center gap-2 text-xl md:text-2xl font-display font-black uppercase hover:text-neon transition">
+            <span>⚽</span>
+            <span>UNLEASH <span class="text-neon">YOUR POWER</span></span>
+        </a>
+        <div class="hidden md:flex space-x-6 text-sm font-bold uppercase">
+            <a href="mainhome page.html" class="hover:text-neon">Home</a>
+            <a href="main attack page.html" class="text-neon border-b border-neon">Attack</a>
+            <a href="defend.html" class="hover:text-neon">Defense</a>
+            <a href="skills.html" class="hover:text-neon">Skills</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto p-6 flex-1">
+        <header class="mb-8">
+            <h1 class="text-4xl md:text-6xl font-display font-black uppercase">Attack Library</h1>
+            <p class="text-gray-400 mt-2">10 attack techniques with steps, videos, and mark-as-mastered tracking.</p>
+            <div class="w-full bg-gray-800 h-2 mt-4"><div id="prog-att" class="bg-neon h-full w-0"></div></div>
+        </header>
+
+        <section id="list" class="grid md:grid-cols-2 gap-6"></section>
+    </main>
+
+    <!-- Media modal (used for single curated YouTube videos) -->
+    <div id="media-modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/70 p-4" aria-hidden="true">
+        <div class="bg-card w-full max-w-6xl rounded-lg overflow-hidden">
+            <div class="p-4 flex justify-between items-start border-b border-gray-800">
+                <h3 id="modal-title" class="font-bold text-lg"></h3>
+                <div class="flex items-center gap-3">
+                    <button id="modal-mark" class="px-3 py-1 bg-neon text-black font-bold rounded">Mark as Mastered</button>
+                    <button id="modal-close" class="text-gray-400 hover:text-white">Close</button>
+                </div>
+            </div>
+            <div class="px-4 pb-4">
+                <p id="modal-desc" class="text-gray-400"></p>
+                <ul id="modal-steps" class="mt-3 text-sm text-gray-400"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const data = [
+            {id:1, title:'Push Pass & Simple Shot', desc:'Use inside of foot for accuracy.', steps:['Plant foot next to ball','Lock ankle','Follow through']},
+            {id:2, title:'Dribbling into Space', desc:'Drive into open grass.', steps:['Push with laces','Head up','Accelerate']},
+            {id:3, title:'Body Feint', desc:'Drop shoulder to fake defender.', steps:['Drop shoulder left','Explode right','Use outside of foot']},
+            {id:4, title:'Curved Shot', desc:'Wrap foot around ball.', steps:['45 degree angle','Strike side of ball','Lean over it']},
+            {id:5, title:'Blindside Run', desc:"Run behind defender's back.", steps:['Start away from ball','Cut behind defender','Call for pass']},
+            {id:6, title:'Through Ball', desc:'Pass to future space.', steps:['Look for runner','Weight the pass','Split defenders']},
+            {id:7, title:'Chip Shot', desc:'Lift ball over keeper.', steps:['Lean back','Stab underneath','No follow through']},
+            {id:8, title:'Volley Finish', desc:'Strike ball in air.', steps:['Eye on ball','Knee over ball','Strike center']},
+            {id:9, title:'One-Two Play', desc:'Pass and go.', steps:['Pass to teammate','Sprint past defender','Receive return']},
+            {id:10, title:'Overlapping Run', desc:'Create 2v1 on wing.', steps:['Run outside teammate','Scream for ball','Cross or shoot']}
+        ];
+
+        const storageKey = 'mastered_attack';
+        const videoPrefix = 'video_attack_';
+        let currentModal = {id: null, type: 'attack'};
+
+        function getYouTubeEmbedUrl(input, fallbackSearch){
+            if(!input) return 'https://www.youtube.com/embed?listType=search&list=' + encodeURIComponent(fallbackSearch);
+            try{
+                // if it's already an embed URL
+                if(input.includes('youtube.com/embed') || input.includes('youtube-nocookie.com/embed')) return input;
+                // youtu.be short link
+                let m = input.match(/youtu\.be\/([A-Za-z0-9_-]+)/);
+                if(m && m[1]) return 'https://www.youtube.com/embed/' + m[1];
+                // full url v=ID
+                m = input.match(/[?&]v=([A-Za-z0-9_-]+)/);
+                if(m && m[1]) return 'https://www.youtube.com/embed/' + m[1];
+                // direct id
+                if(/^[A-Za-z0-9_-]{6,}$/.test(input)) return 'https://www.youtube.com/embed/' + input;
+                // otherwise use search as fallback
+                return 'https://www.youtube.com/embed?listType=search&list=' + encodeURIComponent(fallbackSearch);
+            }catch(e){
+                return 'https://www.youtube.com/embed?listType=search&list=' + encodeURIComponent(fallbackSearch);
+            }
+        }
+
+        function render(){
+            const container = document.getElementById('list');
+            const mastered = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            document.getElementById('prog-att').style.width = (mastered.length / data.length) * 100 + '%';
+
+            container.innerHTML = data.map(function(s) {
+                return '<div class="bg-card p-4 border border-gray-800 rounded-lg flex items-start gap-4">' +
+                    '<div class="flex-1">' +
+                        '<div class="flex items-center justify-between mb-2">' +
+                            '<h3 class="font-bold uppercase">' + s.title + '</h3>' +
+                            '<span class="text-gray-400 text-sm">Technique ' + s.id + '</span>' +
+                        '</div>' +
+                        '<p class="text-gray-400 text-sm mb-3">' + s.desc + '</p>' +
+                        '<div class="flex gap-2">' +
+                            '<button onclick="toggle(' + s.id + ')" class="px-3 py-2 text-sm font-bold uppercase border ' + (mastered.includes(s.id) ? 'bg-neon text-black border-neon' : 'border-gray-700 text-gray-300') + '">' + (mastered.includes(s.id) ? 'Mastered ✔' : 'Mark') + '</button>' +
+                            '<button onclick="openAttackModal(' + s.id + ')" class="px-3 py-2 text-sm border border-gray-700 text-gray-300">Details</button>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
+        }
+
+
+        function openAttackModal(id){
+            const s = data.find(x=>x.id===id);
+            const explanations = {
+                1: 'Push Pass & Simple Shot: Used for accurate passing and shooting. Effective for quick ball movement and finishing in front of goal.',
+                2: 'Dribbling into Space: Used to advance the ball into open areas. Effective for breaking defensive lines and creating scoring opportunities.',
+                3: 'Body Feint: Used to deceive defenders. Effective for creating space and beating opponents one-on-one.',
+                4: 'Curved Shot: Used to bend the ball around defenders or the goalkeeper. Effective for scoring from tight angles.',
+                5: 'Blindside Run: Used to lose defenders and receive the ball in dangerous areas. Effective for exploiting defensive weaknesses.',
+                6: 'Through Ball: Used to pass into space for a teammate. Effective for fast breaks and counter-attacks.',
+                7: 'Chip Shot: Used to lift the ball over the goalkeeper. Effective when the keeper is off their line.',
+                8: 'Volley Finish: Used to strike the ball in the air. Effective for quick finishes and unpredictable shots.',
+                9: 'One-Two Play: Used for quick give-and-go passes. Effective for breaking through tight defenses.',
+                10: 'Overlapping Run: Used to create numerical advantage on the wing. Effective for crossing and attacking wide areas.'
+            };
+            currentModal.id = s.id;
+            document.getElementById('modal-title').textContent = s.title;
+            document.getElementById('modal-desc').textContent = explanations[s.id] || s.desc;
+            document.getElementById('modal-steps').innerHTML = '';
+            // Update modal-mark button label and style
+            const mastered = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            const markBtn = document.getElementById('modal-mark');
+            if (mastered.includes(s.id)) {
+                markBtn.textContent = 'Unmark as Mastered';
+                markBtn.className = 'px-3 py-1 bg-gray-700 text-white font-bold rounded';
+            } else {
+                markBtn.textContent = 'Mark as Mastered';
+                markBtn.className = 'px-3 py-1 bg-neon text-black font-bold rounded';
+            }
+            const modal = document.getElementById('media-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            modal.setAttribute('aria-hidden','false');
+        }
+
+
+
+        function toggle(id){
+            let m = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            if(m.includes(id)) m = m.filter(x=>x!==id); else m.push(id);
+            localStorage.setItem(storageKey, JSON.stringify(m));
+            render();
+        }
+
+        function closeModal(){
+            const modal = document.getElementById('media-modal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+            modal.setAttribute('aria-hidden','true');
+        }
+
+        render();
+        // Attach modal event listeners after DOM is ready and elements exist
+        // Use event delegation for modal actions
+        document.getElementById('media-modal').addEventListener('click', function(e) {
+            if (e.target.id === 'modal-close') {
+                e.stopPropagation();
+                closeModal();
+            } else if (e.target === this) {
+                closeModal();
+            }
+        });
+        document.getElementById('modal-mark').addEventListener('click', function() {
+            if (currentModal.id != null) {
+                let m = JSON.parse(localStorage.getItem(storageKey) || '[]');
+                if(m.includes(currentModal.id)) m = m.filter(x=>x!==currentModal.id); else m.push(currentModal.id);
+                localStorage.setItem(storageKey, JSON.stringify(m));
+                // Update button label and style immediately
+                const markBtn = document.getElementById('modal-mark');
+                if (m.includes(currentModal.id)) {
+                    markBtn.textContent = 'Unmark as Mastered';
+                    markBtn.className = 'px-3 py-1 bg-gray-700 text-white font-bold rounded';
+                } else {
+                    markBtn.textContent = 'Mark as Mastered';
+                    markBtn.className = 'px-3 py-1 bg-neon text-black font-bold rounded';
+                }
+                render();
+            }
+        });
+    </script>
+</body>
+</html>

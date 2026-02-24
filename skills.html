@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skills | OE Training</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { neon: '#39FF14', dark: '#111111', card: '#1F1F1F', darklighter: '#2A2A2A' },
+                    fontFamily: { display: ['Montserrat', 'sans-serif'], mono: ['Roboto Mono', 'monospace'] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-dark text-gray-200 min-h-screen flex flex-col">
+
+    <nav class="bg-black border-b border-neon/30 p-4 flex justify-between items-center z-50">
+        <a href="mainhome page.html" class="flex items-center gap-2 text-xl md:text-2xl font-display font-black uppercase hover:text-neon transition">
+            <span>⚽</span>
+            <span>OE <span class="text-neon">TRAINING</span></span>
+        </a>
+        <div class="hidden md:flex space-x-6 text-sm font-bold uppercase">
+            <a href="mainhome page.html" class="hover:text-neon">Home</a>
+            <a href="main attack page.html" class="hover:text-neon">Attack</a>
+            <a href="defend.html" class="hover:text-neon">Defense</a>
+            <a href="skills.html" class="text-neon border-b border-neon">Skills</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto p-6 flex-1">
+        <header class="mb-8">
+            <h1 class="text-4xl md:text-6xl font-display font-black uppercase">Skills Library</h1>
+            <p class="text-gray-400 mt-2">30 skills arranged by level (1 = Beginner, 6 = Advanced Pro). Filter and mark skills as mastered.</p>
+            <div class="w-full bg-gray-800 h-2 mt-4"><div id="prog-skill" class="bg-neon h-full w-0"></div></div>
+        </header>
+
+        <section class="mb-6">
+            <div class="flex gap-2 flex-wrap">
+                <button onclick="setLevel(0)" class="px-4 py-2 border border-gray-700 text-sm text-gray-300 bg-black">All</button>
+                
+            </div>
+        </section>
+
+        <section id="list" class="grid md:grid-cols-2 gap-6"></section>
+    </main>
+
+    <!-- Media modal (used for example YouTube demos) -->
+    <div id="media-modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/70 p-4" aria-hidden="true">
+        <div class="bg-card w-full max-w-6xl rounded-lg overflow-hidden">
+            <div class="p-4 flex justify-between items-start border-b border-gray-800">
+                <h3 id="modal-title" class="font-bold text-lg"></h3>
+                <div class="flex items-center gap-3">
+                    <button id="modal-mark" class="px-3 py-1 bg-neon text-black font-bold rounded">Mark as Mastered</button>
+                    <button id="modal-close" class="text-gray-400 hover:text-white">Close</button>
+                </div>
+            </div>
+            <div class="px-4 pb-4">
+                <p id="modal-desc" class="text-gray-400"></p>
+                <ul id="modal-steps" class="mt-3 text-sm text-gray-400"></ul>
+                    <p id="modal-desc" class="text-gray-400"></p>
+                    <ul id="modal-steps" class="mt-3 text-sm text-gray-400"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const data = [
+            // Level 1 (6)
+            {id:1, title:'Basic Ball Control', level:1, desc:'Trap and cushion the ball under pressure.'},
+            {id:2, title:'Short Passing', level:1, desc:'Accurate passes under 10m.'},
+            {id:3, title:'First Touch', level:1, desc:'Prepare the ball for the next action.'},
+            {id:4, title:'Simple Dribble', level:1, desc:'Keep close control at walking pace.'},
+            {id:5, title:'Basic Shielding', level:1, desc:'Use body to protect the ball.'},
+            {id:6, title:'Awareness', level:1, desc:'Head up, know where teammates are.'},
+            // Level 2 (6)
+            {id:7, title:'Turning Under Pressure', level:2, desc:'Reliable turns to escape marker.'},
+            {id:8, title:'Weighted Pass', level:2, desc:'Pass with the right power.'},
+            {id:9, title:'Change of Pace', level:2, desc:'Use sudden acceleration to beat defender.'},
+            {id:10, title:'Lateral Dribble', level:2, desc:'Quick feet moves side-to-side.'},
+            {id:11, title:'One-touch Passing', level:2, desc:'Release ball quickly with one touch.'},
+            {id:12, title:'Simple Flicks', level:2, desc:'Use small skill to open space.'},
+            // Level 3 (6)
+            {id:13, title:'Feints & Body Fakes', level:3, desc:'Create space with deception.'},
+            {id:14, title:'Weak-Foot Accuracy', level:3, desc:'Use both feet reliably.'},
+            {id:15, title:'Long Passing', level:3, desc:'Deliver accurate long passes.'},
+            {id:16, title:'First-time Finishing', level:3, desc:'Hit clean first-time shots.'},
+            {id:17, title:'Controlled Volley', level:3, desc:'Strike volleys with control.'},
+            {id:18, title:'Close Control in Traffic', level:3, desc:'Keep ball in tight spaces.'},
+            // Level 4 (4)
+            {id:19, title:'Advanced Dribbling Moves', level:4, desc:'Stepovers, roulettes with purpose.'},
+            {id:20, title:'Precision Crossing', level:4, desc:'Find runners consistently.'},
+            {id:21, title:'Through-ball Vision', level:4, desc:'Split defenses with timing.'},
+            {id:22, title:'Composed Combinations', level:4, desc:'Quick link-up in high pressure.'},
+            // Level 5 (4)
+            {id:23, title:'Curve Shots', level:5, desc:'Bend ball around keepers.'},
+            {id:24, title:'Speed Dribble vs Marker', level:5, desc:'Beat pro markers at speed.'},
+            {id:25, title:'Switching Play', level:5, desc:'Change flank with a single pass.'},
+            {id:26, title:'Counter-attack Reading', level:5, desc:'Exploit transition moments.'},
+            // Level 6 (4)
+            {id:27, title:'Elite One-on-One Finishing', level:6, desc:'Finish under elite pressure.'},
+            {id:28, title:'Masterful False-9 Movement', level:6, desc:'Create space and overloads.'},
+            {id:29, title:'High-speed Skill Execution', level:6, desc:'Execute complex skills at peak speed.'},
+            {id:30, title:'Pro-level Vision & Decision', level:6, desc:'Anticipate and decide like a pro.'}
+        ];
+
+        let activeLevel = 0; // 0 = all
+        const storageKey = 'mastered_skills';
+        const videoPrefix = 'video_skill_';
+        let currentModal = {id: null, type: 'skills'};
+
+        function getYouTubeEmbedUrl(input, fallbackSearch){
+            if(!input) return 'https://www.youtube.com/embed?listType=search&list=' + encodeURIComponent(fallbackSearch);
+            try{
+                if(input.includes('youtube.com/embed') || input.includes('youtube-nocookie.com/embed')) return input;
+                let m = input.match(/youtu\.be\/([A-Za-z0-9_-]+)/);
+                if(m && m[1]) return 'https://www.youtube.com/embed/' + m[1];
+                m = input.match(/[?&]v=([A-Za-z0-9_-]+)/);
+                if(m && m[1]) return 'https://www.youtube.com/embed/' + m[1];
+                if(/^[A-Za-z0-9_-]{6,}$/.test(input)) return 'https://www.youtube.com/embed/' + input;
+                return 'https://www.youtube.com/embed?listType=search&list=' + encodeURIComponent(fallbackSearch);
+            }catch(e){
+                return 'https://www.youtube.com/embed?listType=search&list=' + encodeURIComponent(fallbackSearch);
+            }
+        }
+
+        function setLevel(l){ activeLevel = 0; render(); } // Always show all skills
+
+        function render(){
+            const container = document.getElementById('list');
+            const mastered = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            document.getElementById('prog-skill').style.width = (mastered.length / data.length) * 100 + '%';
+
+            // Always show all skills
+            container.innerHTML = data.map(s =>`
+                <div class="bg-card p-4 border border-gray-800 rounded-lg flex items-start gap-4">
+                    <div class="flex-1">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-bold uppercase">${s.title}</h3>
+                            <span class="text-gray-400 text-sm">Level ${s.level}</span>
+                        </div>
+                        <p class="text-gray-400 text-sm mb-3">${s.desc}</p>
+                        <div class="flex gap-2">
+                            <button onclick="toggle(${s.id})" class="px-3 py-2 text-sm font-bold uppercase border ${mastered.includes(s.id) ? 'bg-neon text-black border-neon' : 'border-gray-700 text-gray-300'}">${mastered.includes(s.id) ? 'Mastered ✔' : 'Mark'}</button>
+                            <button onclick="openSkillModal(${s.id})" class="px-3 py-2 text-sm border border-gray-700 text-gray-300">Details</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Re-attach modal event listeners after render
+            setTimeout(() => {
+                const modal = document.getElementById('media-modal');
+                const closeBtn = document.getElementById('modal-close');
+                const markBtn = document.getElementById('modal-mark');
+                if (modal && closeBtn) {
+                    modal.onclick = function(e) {
+                        if (e.target.id === 'modal-close' || e.target === modal) {
+                            closeModal();
+                        }
+                    };
+                }
+                if (markBtn) {
+                    markBtn.onclick = function() {
+                        if (currentModal.id != null) {
+                            let m = JSON.parse(localStorage.getItem(storageKey) || '[]');
+                            if(m.includes(currentModal.id)) m = m.filter(x=>x!==currentModal.id); else m.push(currentModal.id);
+                            localStorage.setItem(storageKey, JSON.stringify(m));
+                            // Update button label and style immediately
+                            if (m.includes(currentModal.id)) {
+                                markBtn.textContent = 'Unmark as Mastered';
+                                markBtn.className = 'px-3 py-1 bg-gray-700 text-white font-bold rounded';
+                            } else {
+                                markBtn.textContent = 'Mark as Mastered';
+                                markBtn.className = 'px-3 py-1 bg-neon text-black font-bold rounded';
+                            }
+                            render();
+                        }
+                    };
+                }
+            }, 0);
+        }
+
+        function toggle(id){
+            let m = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            if(m.includes(id)) m = m.filter(x => x !== id); else m.push(id);
+            localStorage.setItem(storageKey, JSON.stringify(m));
+            render();
+        }
+
+        function setVideo(id){
+            const key = videoPrefix + id;
+            const cur = localStorage.getItem(key) || '';
+            const url = prompt('Paste YouTube URL or video ID for this skill (leave blank to remove):', cur);
+            if(url === null) return;
+            if(url.trim() === ''){ localStorage.removeItem(key); alert('Video removed.'); }
+            else { localStorage.setItem(key, url.trim()); alert('Video saved.'); }
+            render();
+        }
+
+        function view(id){
+            const s = data.find(x => x.id === id);
+            openModal(s.title, s.desc, [s.desc], id, 'skills');
+        }
+
+            const explanations = {
+                1: 'Basic Ball Control: Used to trap and cushion the ball under pressure. Essential for maintaining possession and starting attacks.',
+                2: 'Short Passing: Used for accurate passes under 10m. Effective for quick ball movement and team play.',
+                3: 'First Touch: Used to prepare the ball for the next action. Effective for smooth transitions and control.',
+                4: 'Simple Dribble: Used to keep close control at walking pace. Effective for beating defenders in tight spaces.',
+                5: 'Basic Shielding: Used to protect the ball with your body. Effective for holding off opponents and retaining possession.',
+                6: 'Awareness: Used to keep your head up and know where teammates are. Essential for decision making and vision.',
+                7: 'Turning Under Pressure: Used to escape markers reliably. Effective for maintaining possession under pressure.',
+                8: 'Weighted Pass: Used to pass with the right power. Effective for accurate delivery to teammates.',
+                9: 'Change of Pace: Used to beat defenders with sudden acceleration. Effective for creating space.',
+                10: 'Lateral Dribble: Used for quick side-to-side moves. Effective for opening up defenses.',
+                11: 'One-touch Passing: Used to release the ball quickly. Effective for fast-paced play.',
+                12: 'Simple Flicks: Used to open space with small skills. Effective for creative play.',
+                13: 'Feints & Body Fakes: Used to create space with deception. Effective for beating opponents.',
+                14: 'Weak-Foot Accuracy: Used to play reliably with both feet. Effective for versatility.',
+                15: 'Long Passing: Used to deliver accurate long passes. Effective for switching play.',
+                16: 'First-time Finishing: Used to hit clean first-time shots. Effective for scoring opportunities.',
+                17: 'Controlled Volley: Used to strike volleys with control. Effective for unpredictable shots.',
+                18: 'Close Control in Traffic: Used to keep the ball in tight spaces. Effective for maintaining possession.',
+                19: 'Advanced Dribbling Moves: Used for stepovers and roulettes. Effective for beating defenders.',
+                20: 'Precision Crossing: Used to find runners consistently. Effective for creating chances.',
+                21: 'Through-ball Vision: Used to split defenses with timing. Effective for assists.',
+                22: 'Composed Combinations: Used for quick link-up play. Effective for high-pressure situations.',
+                23: 'Curve Shots: Used to bend the ball around keepers. Effective for scoring from distance.',
+                24: 'Speed Dribble vs Marker: Used to beat pro markers at speed. Effective for counter-attacks.',
+                25: 'Switching Play: Used to change flank with a single pass. Effective for stretching defenses.',
+                26: 'Counter-attack Reading: Used to exploit transition moments. Effective for fast breaks.',
+                27: 'Elite One-on-One Finishing: Used to finish under elite pressure. Effective for scoring in big games.',
+                28: 'Masterful False-9 Movement: Used to create space and overloads. Effective for tactical flexibility.',
+                29: 'High-speed Skill Execution: Used to execute complex skills at peak speed. Effective for advanced play.',
+                30: 'Pro-level Vision & Decision: Used to anticipate and decide like a pro. Effective for leadership.'
+            };
+            container.innerHTML = filtered.map(s => {
+                return `
+                <div class="bg-card p-4 border border-gray-800 rounded-lg flex items-start gap-4">
+                    <div class="flex-1">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-bold uppercase">${s.title}</h3>
+                            <span class="text-gray-400 text-sm">Level ${s.level}</span>
+                        </div>
+                        <p class="text-gray-400 text-sm mb-3">${s.desc}</p>
+                        <div class="flex gap-2">
+                            <button onclick="toggle(${s.id})" class="px-3 py-2 text-sm font-bold uppercase border ${mastered.includes(s.id) ? 'bg-neon text-black border-neon' : 'border-gray-700 text-gray-300'}">${mastered.includes(s.id) ? 'Mastered ✔' : 'Mark'}</button>
+                            <button onclick="openSkillModal(${s.id})" class="px-3 py-2 text-sm border border-gray-700 text-gray-300">Details</button>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        // removed stray closing brace here
+
+        function openSkillModal(id) {
+            const s = data.find(x => x.id === id);
+            const explanations = {
+                1: 'Basic Ball Control: Used to trap and cushion the ball under pressure. Essential for maintaining possession and starting attacks.',
+                2: 'Short Passing: Used for accurate passes under 10m. Effective for quick ball movement and team play.',
+                3: 'First Touch: Used to prepare the ball for the next action. Effective for smooth transitions and control.',
+                4: 'Simple Dribble: Used to keep close control at walking pace. Effective for beating defenders in tight spaces.',
+                5: 'Basic Shielding: Used to protect the ball with your body. Effective for holding off opponents and retaining possession.',
+                6: 'Awareness: Used to keep your head up and know where teammates are. Essential for decision making and vision.',
+                7: 'Turning Under Pressure: Used to escape markers reliably. Effective for maintaining possession under pressure.',
+                8: 'Weighted Pass: Used to pass with the right power. Effective for accurate delivery to teammates.',
+                9: 'Change of Pace: Used to beat defenders with sudden acceleration. Effective for creating space.',
+                10: 'Lateral Dribble: Used for quick side-to-side moves. Effective for opening up defenses.',
+                11: 'One-touch Passing: Used to release the ball quickly. Effective for fast-paced play.',
+                12: 'Simple Flicks: Used to open space with small skills. Effective for creative play.',
+                13: 'Feints & Body Fakes: Used to create space with deception. Effective for beating opponents.',
+                14: 'Weak-Foot Accuracy: Used to play reliably with both feet. Effective for versatility.',
+                15: 'Long Passing: Used to deliver accurate long passes. Effective for switching play.',
+                16: 'First-time Finishing: Used to hit clean first-time shots. Effective for scoring opportunities.',
+                17: 'Controlled Volley: Used to strike volleys with control. Effective for unpredictable shots.',
+                18: 'Close Control in Traffic: Used to keep the ball in tight spaces. Effective for maintaining possession.',
+                19: 'Advanced Dribbling Moves: Used for stepovers and roulettes. Effective for beating defenders.',
+                20: 'Precision Crossing: Used to find runners consistently. Effective for creating chances.',
+                21: 'Through-ball Vision: Used to split defenses with timing. Effective for assists.',
+                22: 'Composed Combinations: Used for quick link-up play. Effective for high-pressure situations.',
+                23: 'Curve Shots: Used to bend the ball around keepers. Effective for scoring from distance.',
+                24: 'Speed Dribble vs Marker: Used to beat pro markers at speed. Effective for counter-attacks.',
+                25: 'Switching Play: Used to change flank with a single pass. Effective for stretching defenses.',
+                26: 'Counter-attack Reading: Used to exploit transition moments. Effective for fast breaks.',
+                27: 'Elite One-on-One Finishing: Used to finish under elite pressure. Effective for scoring in big games.',
+                28: 'Masterful False-9 Movement: Used to create space and overloads. Effective for tactical flexibility.',
+                29: 'High-speed Skill Execution: Used to execute complex skills at peak speed. Effective for advanced play.',
+                30: 'Pro-level Vision & Decision: Used to anticipate and decide like a pro. Effective for leadership.'
+            };
+            currentModal.id = s.id;
+            document.getElementById('modal-title').textContent = s.title;
+            document.getElementById('modal-desc').textContent = explanations[s.id] || s.desc;
+            document.getElementById('modal-steps').innerHTML = '';
+            // Update modal-mark button label and style
+            const mastered = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            const markBtn = document.getElementById('modal-mark');
+            if (mastered.includes(s.id)) {
+                markBtn.textContent = 'Unmark as Mastered';
+                markBtn.className = 'px-3 py-1 bg-gray-700 text-white font-bold rounded';
+            } else {
+                markBtn.textContent = 'Mark as Mastered';
+                markBtn.className = 'px-3 py-1 bg-neon text-black font-bold rounded';
+            }
+            const modal = document.getElementById('media-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            modal.setAttribute('aria-hidden','false');
+        }
+
+        function toggleFromModal(id, storageKey){
+            let m = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            if(m.includes(id)) m = m.filter(x => x !== id); else m.push(id);
+            localStorage.setItem(storageKey, JSON.stringify(m));
+            // close modal and refresh
+            closeModal();
+            render();
+        }
+
+        function closeModal(){
+            const modal = document.getElementById('media-modal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+            modal.setAttribute('aria-hidden','true');
+        }
+
+        render();
+        // Attach modal event listeners after DOM is ready and elements exist
+        // Use event delegation for modal actions
+        document.getElementById('media-modal').addEventListener('click', function(e) {
+            if (e.target.id === 'modal-close') {
+                e.stopPropagation();
+                closeModal();
+            } else if (e.target === this) {
+                closeModal();
+            }
+        });
+        document.getElementById('modal-mark').addEventListener('click', function() {
+            if (currentModal.id != null) {
+                let m = JSON.parse(localStorage.getItem(storageKey) || '[]');
+                if(m.includes(currentModal.id)) m = m.filter(x=>x!==currentModal.id); else m.push(currentModal.id);
+                localStorage.setItem(storageKey, JSON.stringify(m));
+                // Update button label and style immediately
+                const markBtn = document.getElementById('modal-mark');
+                if (m.includes(currentModal.id)) {
+                    markBtn.textContent = 'Unmark as Mastered';
+                    markBtn.className = 'px-3 py-1 bg-gray-700 text-white font-bold rounded';
+                } else {
+                    markBtn.textContent = 'Mark as Mastered';
+                    markBtn.className = 'px-3 py-1 bg-neon text-black font-bold rounded';
+                }
+                render();
+            }
+        });
+    </script>
+</body>
+</html>

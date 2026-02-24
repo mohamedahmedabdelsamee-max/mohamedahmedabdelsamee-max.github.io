@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Unleash Your Power - training hub breaking down professional mechanics into actionable steps for players of every level.">
+    <meta property="og:title" content="Unleash Your Power | Training Hub">
+    <meta property="og:description" content="Visual roadmap and training for attacking, defending, and skills to help you win matches.">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="favicon.ico">
+    <title>OE | Training Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { neon: '#39FF14', dark: '#111111', card: '#1F1F1F', darklighter: '#2A2A2A' },
+                    fontFamily: { sans: ['Open Sans', 'sans-serif'], display: ['Montserrat', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Visible skip-link on focus */
+        .skip-link{position:absolute;left:-999px;top:auto;width:1px;height:1px;overflow:hidden}
+        .skip-link:focus{left:1rem;top:1rem;width:auto;height:auto;padding:.5rem 1rem;background:#111;color:#fff;z-index:60}
+    </style>
+</head>
+<body class="bg-dark text-white font-sans overflow-x-hidden flex flex-col min-h-screen">
+
+    <a href="#main" class="skip-link">Skip to content</a>
+
+    <nav class="bg-black border-b border-neon/30 sticky top-0 z-50" role="navigation" aria-label="Main navigation">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="mainhome page.html" class="flex items-center gap-2 text-xl md:text-2xl font-display font-black uppercase tracking-tighter hover:scale-105 transition transform">
+                <span aria-hidden="true">⚽</span>
+                <span>UNLEASH <span class="text-neon">YOUR POWER</span></span>
+            </a>
+            
+            <div class="hidden md:flex space-x-8 font-bold text-sm uppercase tracking-wide" role="menu" aria-label="Primary">
+                <a href="mainhome page.html" class="text-neon border-b border-neon" role="menuitem">Home</a>
+                <a href="main attack page.html" class="hover:text-neon transition" role="menuitem">Attack</a>
+                <a href="defend.html" class="hover:text-neon transition" role="menuitem">Defense</a>
+                <a href="skills.html" class="hover:text-neon transition" role="menuitem">Skills</a>
+            </div>
+        </div>
+    </nav>
+
+    <main id="main" role="main" class="flex-1">
+    <header class="py-24 text-center px-4 relative flex-1 flex flex-col justify-center">
+        <div class="absolute inset-0 bg-gradient-to-b from-black via-gray-900 to-dark opacity-80 z-0"></div>
+        <div class="relative z-10 max-w-4xl mx-auto">
+            <h1 class="text-5xl md:text-8xl font-display font-black mb-4 leading-tight uppercase">
+                DOMINATE THE GAME
+            </h1>
+            
+            <p class="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed border-l-4 border-neon pl-6 text-left bg-black/50 p-4 rounded-r-lg">
+                <span class="text-neon font-bold block mb-1">WHY TRAIN HERE?</span>
+                This platform breaks down complex professional mechanics into simple, actionable steps. Whether you are a beginner or an academy player, our visual roadmap helps you analyze, understand, and execute moves that win matches.
+            </p>
+
+            <a href="skills.html" class="inline-block px-10 py-5 bg-neon text-black font-black text-xl rounded-none hover:bg-white transition uppercase skew-x-[-10deg]" role="button" aria-label="Start training">
+                <div class="skew-x-[10deg]">Start Training</div>
+            </a>
+        </div>
+    </header>
+
+    <section class="container mx-auto px-6 py-20" aria-labelledby="features-heading">
+        <h2 id="features-heading" class="sr-only">Training categories</h2>
+        <div class="grid md:grid-cols-3 gap-8">
+            
+            <a href="main attack page.html" class="group bg-card border border-gray-800 hover:border-neon p-8 transition duration-300 relative overflow-hidden" aria-labelledby="attack-heading">
+                <div class="absolute top-0 right-0 p-4 text-8xl opacity-5 grayscale group-hover:grayscale-0 transition" aria-hidden="true">🚀</div>
+                <h3 id="attack-heading" class="text-3xl font-display font-bold text-white mb-2 uppercase group-hover:text-neon">Attack</h3>
+                <p class="text-gray-400 mb-4">10 Key Techniques</p>
+                <div class="w-full bg-gray-800 h-1 mt-4" aria-hidden="true"><div class="bg-neon h-full w-0" id="prog-att"></div></div>
+                <div class="sr-only" id="prog-att-label">Attack progress</div>
+            </a>
+
+            <a href="defend.html" class="group bg-card border border-gray-800 hover:border-neon p-8 transition duration-300 relative overflow-hidden" aria-labelledby="defend-heading">
+                <div class="absolute top-0 right-0 p-4 text-8xl opacity-5 grayscale group-hover:grayscale-0 transition" aria-hidden="true">🛡️</div>
+                <h3 id="defend-heading" class="text-3xl font-display font-bold text-white mb-2 uppercase group-hover:text-neon">Defense</h3>
+                <p class="text-gray-400 mb-4">10 Mastery Moves</p>
+                <div class="w-full bg-gray-800 h-1 mt-4" aria-hidden="true"><div class="bg-neon h-full w-0" id="prog-def"></div></div>
+                <div class="sr-only" id="prog-def-label">Defense progress</div>
+            </a>
+
+            <a href="skills.html" class="group bg-card border border-gray-800 hover:border-neon p-8 transition duration-300 relative overflow-hidden" aria-labelledby="skills-heading">
+                <div class="absolute top-0 right-0 p-4 text-8xl opacity-5 grayscale group-hover:grayscale-0 transition" aria-hidden="true">⚡</div>
+                <h3 id="skills-heading" class="text-3xl font-display font-bold text-white mb-2 uppercase group-hover:text-neon">Skills</h3>
+                <p class="text-gray-400 mb-4">30 Moves (Level 1-6)</p>
+                <div class="w-full bg-gray-800 h-1 mt-4" aria-hidden="true"><div class="bg-neon h-full w-0" id="prog-skill"></div></div>
+                <div class="sr-only" id="prog-skill-label">Skills progress</div>
+            </a>
+
+        </div>
+    </section>
+    </main>
+
+    <footer class="bg-black border-t border-gray-800 text-center py-8" role="contentinfo">
+        <p class="text-gray-500 text-sm font-mono">
+            &copy; 2026 UNLEASH YOUR POWER. ALL RIGHTS RESERVED.
+        </p>
+    </footer>
+
+    <script>
+        function safeParse(key){
+            try{return JSON.parse(localStorage.getItem(key) || '[]')}
+            catch(e){return []}
+        }
+        function setProgress(key, id, total){
+            const arr = safeParse(key);
+            const pct = total>0? Math.min(100, (arr.length / total) * 100) : 0;
+            const el = document.getElementById(id);
+            if(!el) return;
+            el.style.width = pct + '%';
+            // set accessible progress value on container if present
+            const container = el.parentElement;
+            if(container){
+                container.setAttribute('role','progressbar');
+                container.setAttribute('aria-valuemin','0');
+                container.setAttribute('aria-valuemax','100');
+                container.setAttribute('aria-valuenow', String(Math.round(pct)));
+                const label = document.getElementById(id.replace('prog-','prog-')+"-label");
+                if(label) container.setAttribute('aria-labelledby', label.id);
+            }
+        }
+        setProgress('mastered_attack', 'prog-att', 10);
+        setProgress('mastered_defend', 'prog-def', 10);
+        setProgress('mastered_skills', 'prog-skill', 30);
+    </script>
+</body>
+</html>
